@@ -1,7 +1,7 @@
 from models.data_source import users
 from utils.crud import add_user
 from utils.crud import read_friends, search_user, remove_user
-
+from utils.emap import single_map
 
 
 if __name__ == '__main__':
@@ -11,6 +11,8 @@ if __name__ == '__main__':
         print("2. Add new user")
         print("3. Search user")
         print("4. Remove user")
+        print("5. Generate map")
+        print("6. Exitdfgdhg")
         print("0. Exit")
         menu_option = input("Choose an option:")
         if menu_option == "0":
@@ -23,3 +25,6 @@ if __name__ == '__main__':
             search_user(users)
         if menu_option == "4":
             remove_user(users)
+        if menu_option == "5":
+            single_map(search_user(users)['location'])
+        if menu_option == "6":
