@@ -1,7 +1,7 @@
 from tkinter import *
+from tkinter import *
 
-
-
+import tkintermapview
 
 #settings
 users=[]
@@ -49,6 +49,7 @@ def pokaz_szczegoly_uzytkownika():
     label_imie_szczegoly_obiektu_wartosc.config(text=imie)
     label_nazwisko_szczegoly_obiektu.config(text=nazwisko)
 
+
 def edytuj_uzytkownika():
     i = listbox_lista_obiektow.index(ACTIVE)
     entry_imie.insert(0, users[i].name)
@@ -57,10 +58,6 @@ def edytuj_uzytkownika():
     entry_lokalizacja.insert(0, users[i].location)
 
     button_dodaj_uzytkownika.config(text="Zapisz zmiany", command=lambda:aktualizuj_uzytkownika(i))
-    entry_imie.delete(0, END)
-    entry_nazwisko.delete(0, END)
-    entry_posty.delete(0, END)
-    entry_lokalizacja.delete(0, END)
     entry_imie.focus()
 
 def aktualizuj_uzytkownika(i):
@@ -69,11 +66,18 @@ def aktualizuj_uzytkownika(i):
     users[i].posts = entry_posty.get()
     users[i].location = entry_lokalizacja.get()
     lista_uzytkownikow()
+    button_dodaj_uzytkownika.config(text='Dodaj użytkownika', command=dodaj_uzytkownika)
+    entry_imie.delete(0, END)
+    entry_nazwisko.delete(0, END)
+    entry_posty.delete(0, END)
+    entry_lokalizacja.delete(0, END)
+    entry_imie.focus()
+
 
 #GUI
 root = Tk()
 root.title("MapBook")
-root.geometry("800x500")
+root.geometry("1024x700")
 
 #ramki do porządkowania struktury
 ramka_lista_obiektow = Frame(root)
@@ -146,6 +150,14 @@ label_posty_szczegoly_obiektu_wartosc.grid(row=1, column=5)
 label_lokalizacja_szczegoly_obiektu.grid(row=1, column=6)
 label_lokalizacja_szczegoly_obiektu_wartosc.grid(row=1, column=7)
 
+map_widget = tkintermapview.TkinterMapView(ramka_szczegoly_obiektow, width=1000, height=500)
+map_widget.set_position(52.2, 21.0)
+map_widget.set_zoom(8)
+marker_WAT = map_widget.set_marker(52.25376421641225, 20.904509204119396, text="WAT")
+
+
+
+map_widget.grid(row=2, column=0, columnspan=8)
 
 
 root.mainloop()
