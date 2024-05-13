@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import *
 
 import tkintermapview
+import requests
+from bs4 import BeautifulSoup
 
 #settings
 users=[]
@@ -13,11 +15,22 @@ class User:
         self.surname = surname
         self.posts = posts
         self.location = location
+        self.wspolrzedne = User.wspolrzedne(self)
+
+
+    def wspolrzedne(self)->list:
+        url: str = f'https://pl.wikipedia.org/wiki/{self.location}'
+        response = requests.get(url)
+        response_html = BeautifulSoup(response.text, 'html.parser')
+        return [float(response_html.select('.latitude')[1].text.replace(",", ".")),
+                float(response_html.select('.longitude')[1].text.replace(",", "."))
+                ]
 
 def lista_uzytkownikow():
     listbox_lista_obiektow.delete(0, END)
     for idx, user in enumerate(users):
         listbox_lista_obiektow.insert(idx, f'{user.name} {user.surname} {user.posts} {user.location}')
+        map_widget.set_marker(user.wspolrzedne[0], user.wspolrzedne[1], text=f'{user.name}')
 
 def dodaj_uzytkownika():
     imie = entry_imie.get()
@@ -47,7 +60,11 @@ def pokaz_szczegoly_uzytkownika():
     posty = users[i].posts
     lokalizacja = users[i].location
     label_imie_szczegoly_obiektu_wartosc.config(text=imie)
-    label_nazwisko_szczegoly_obiektu.config(text=nazwisko)
+    label_nazwisko_szczegoly_obiektu_wartosc.config(text=nazwisko)
+    label_posty_szczegoly_obiektu_wartosc.config(text=posty)
+    label_lokalizacja_szczegoly_obiektu_wartosc.config(text=lokalizacja)
+    map_widget.set_position(users[i].wspolrzedne[0], users[i].wspolrzedne[1])
+    map_widget.set_zoom(8)
 
 
 def edytuj_uzytkownika():
