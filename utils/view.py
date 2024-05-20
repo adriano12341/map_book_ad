@@ -87,7 +87,7 @@ def aktualizuj_uzytkownika(i):
     users[i].marker.delete()
     users[i].marker = map_widget.set_marker(users[i].wspolrzedne[0], users[i].wspolrzedne[1], text=f'{users[i].name}')
     lista_uzytkownikow()
-    button_dodaj_uzytkownika.config(text='Dodaj użytkownika', command=dodaj_uzytkownika)
+    button_dodaj_uzytkownika.config(text='Dodaj użytkownika', command=dodaj_uzytkownik)
     entry_imie.delete(0, END)
     entry_nazwisko.delete(0, END)
     entry_posty.delete(0, END)
