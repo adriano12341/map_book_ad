@@ -4,6 +4,13 @@ from tkinter import *
 import tkintermapview
 import requests
 from bs4 import BeautifulSoup
+import psycopg2 as ps
+db_params = ps.connect(database='mapbook',
+                       user='postgres',
+                       password='test',
+                       host='localhost',
+                       port='5432'
+                       )
 
 #settings
 users=[]
@@ -27,12 +34,18 @@ class User:
                 ]
 
 def lista_uzytkownikow():
+    cursor = db_params.cursor()
+    sql_show_users = 'SELECT * FROM public.users'
+    cursor.execute(sql_show_users)
+    users = cursor.fetchall()
+    cursor.close()
     listbox_lista_obiektow.delete(0, END)
     for idx, user in enumerate(users):
-        listbox_lista_obiektow.insert(idx, f'{user.name} {user.surname} {user.posts} {user.location}')
+        listbox_lista_obiektow.insert(idx, f'{user[0]}, {user[1]}, {user[2]}, {user[3]}, {user[4]}')
 
 
 def dodaj_uzytkownika():
+    cursor = db_params.cursor()
     imie = entry_imie.get()
     nazwisko = entry_nazwisko.get()
     posty = entry_posty.get()
@@ -40,6 +53,12 @@ def dodaj_uzytkownika():
     print(imie, nazwisko, posty, lokalizacja)
     users.append(User(imie, nazwisko, posty, lokalizacja))
     lista_uzytkownikow()
+    sql_insert_user = f"INSERT INTO public.users(name, surname, posts, location) VALUES ('{imie}', '{nazwisko}', '{posty}', '{lokalizacja}');"
+    cursor.execute(sql_insert_user)
+    db_params.commit()
+    cursor.close()
+
+
 
     entry_imie.delete(0, END)
     entry_nazwisko.delete(0, END)
@@ -48,8 +67,12 @@ def dodaj_uzytkownika():
     entry_imie.focus()
 
 def usun_uzytkownika():
+    #cursor = db_params.cursor()
     i = listbox_lista_obiektow.index(ACTIVE)
     print(i)
+    #sql_delete_user = f"DELETE FROM public.users WHERE name='{imie}' and surname='{nazwisko}';"
+    #cursor.execute(sql_delete_user)
+    db_params.commit()
     users[i].marker.delete()
     users.pop(i)
     lista_uzytkownikow()
@@ -87,7 +110,7 @@ def aktualizuj_uzytkownika(i):
     users[i].marker.delete()
     users[i].marker = map_widget.set_marker(users[i].wspolrzedne[0], users[i].wspolrzedne[1], text=f'{users[i].name}')
     lista_uzytkownikow()
-    button_dodaj_uzytkownika.config(text='Dodaj użytkownika', command=dodaj_uzytkownik)
+    button_dodaj_uzytkownika.config(text='Dodaj użytkownika', command=dodaj_uzytkownika)
     entry_imie.delete(0, END)
     entry_nazwisko.delete(0, END)
     entry_posty.delete(0, END)
